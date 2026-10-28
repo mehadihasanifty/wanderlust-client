@@ -52,7 +52,6 @@ const DestinationDetailsPage = async ({
   params: Promise<{ id: string }>;
 }) => {
   const { id } = await params;
-
   const res = await fetch(`http://localhost:5000/destination/${id}`);
   if (!res.ok) notFound();
   const destination: IDestination = await res.json();
