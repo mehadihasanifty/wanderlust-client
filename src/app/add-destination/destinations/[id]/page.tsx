@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { Suspense } from "react";
 import {
   ArrowLeft,
   ArrowRight,
@@ -15,6 +16,8 @@ import { Input } from "@/components/ui/input";
 import type { IDestination } from "@/lib/types/destinations";
 import EditDestinationDialog from "@/components/destination/EditDestinationDialog";
 import DeleteDestinationDialog from "@/components/destination/DeleteDestinationDialog";
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000";
 
 const highlights = [
   "Professional local guide",
@@ -46,18 +49,18 @@ function reviews(id: string) {
   return 120 + ((sum * 7) % 380);
 }
 
-const DestinationDetailsPage = async ({
+async function DestinationDetails({
   params,
 }: {
   params: Promise<{ id: string }>;
-}) => {
+}) {
   const { id } = await params;
-  const res = await fetch(`http://localhost:5000/destination/${id}`);
+  const res = await fetch(`${API_URL}/destination/${id}`);
   if (!res.ok) notFound();
   const destination: IDestination = await res.json();
 
   return (
-    <main className="mx-auto max-w-6xl px-6 py-8">
+    <>
       {/* Actions */}
       <div className="flex items-center justify-between gap-4">
         <Link
@@ -68,12 +71,9 @@ const DestinationDetailsPage = async ({
           Back to Destinations
         </Link>
         <div className="flex items-center gap-3">
-          
+          <EditDestinationDialog destination={destination} />
 
-          <EditDestinationDialog destination ={destination}/>
-
-          <DeleteDestinationDialog id={id}/>
-       
+          <DeleteDestinationDialog id={id} />
         </div>
       </div>
 
@@ -179,6 +179,55 @@ const DestinationDetailsPage = async ({
           </aside>
         </div>
       </div>
+    </>
+  );
+}
+
+function DestinationDetailsSkeleton() {
+  return (
+    <div>
+      <div className="flex items-center justify-between gap-4">
+        <div className="h-4 w-40 animate-pulse rounded-md bg-muted" />
+        <div className="flex gap-3">
+          <div className="h-9 w-32 animate-pulse rounded-md bg-muted" />
+          <div className="h-9 w-32 animate-pulse rounded-md bg-muted" />
+        </div>
+      </div>
+
+      <div className="mt-6 h-72 w-full animate-pulse rounded-sm bg-muted md:h-80" />
+
+      <div className="mt-6 rounded-sm border border-border p-6">
+        <div className="grid gap-8 lg:grid-cols-[1fr_280px]">
+          <div>
+            <div className="h-4 w-40 animate-pulse rounded-md bg-muted" />
+            <div className="mt-3 h-10 w-72 animate-pulse rounded-md bg-muted" />
+            <div className="mt-4 h-5 w-48 animate-pulse rounded-md bg-muted" />
+            <div className="mt-8 h-6 w-32 animate-pulse rounded-md bg-muted" />
+            <div className="mt-3 h-4 w-full animate-pulse rounded-md bg-muted" />
+            <div className="mt-2 h-4 w-3/4 animate-pulse rounded-md bg-muted" />
+          </div>
+          <div className="h-fit rounded-sm border border-border p-5">
+            <div className="h-4 w-28 animate-pulse rounded-md bg-muted" />
+            <div className="mt-2 h-9 w-32 animate-pulse rounded-md bg-muted" />
+            <div className="mt-4 h-10 w-full animate-pulse rounded-md bg-muted" />
+            <div className="mt-4 h-10 w-full animate-pulse rounded-md bg-muted" />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+const DestinationDetailsPage = ({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) => {
+  return (
+    <main className="mx-auto max-w-6xl px-6 py-8">
+      <Suspense fallback={<DestinationDetailsSkeleton />}>
+        <DestinationDetails params={params} />
+      </Suspense>
     </main>
   );
 };

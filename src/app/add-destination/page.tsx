@@ -37,7 +37,9 @@ export default function AddDestinationPage() {
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    const res = await fetch("http://localhost:5000/add-destination", {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000"}/add-destination`,
+      {
         method: "POST",
         headers: {
             "Content-Type": "application/json",

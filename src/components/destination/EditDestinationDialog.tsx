@@ -49,10 +49,11 @@ const EditDestinationDialog = ({ destination } : {destination: IDestination}) =>
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { _id, ...updatedData } = form;
 
     const res = await fetch(
-      `http://localhost:8000/destination/${destination._id}`,
+      `${process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000"}/destination/${destination._id}`,
       {
         method: "PATCH",
         headers: {

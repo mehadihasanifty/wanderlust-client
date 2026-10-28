@@ -3,8 +3,10 @@ import { Suspense } from "react";
 import { DestinationsGrid } from "@/components/destination/destinations-grid";
 import type { IDestination } from "@/lib/types/destinations";
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000";
+
 async function Destinations() {
-  const res = await fetch("http://localhost:5000/destinations");
+  const res = await fetch(`${API_URL}/destinations`);
   const data: IDestination[] = await res.json();
 
   return <DestinationsGrid destinations={data} />;
